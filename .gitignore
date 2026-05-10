@@ -1,0 +1,23 @@
+# React
+node_modules/
+dist/
+
+# Spring Boot
+target/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config privados
+application-dev.properties
+application-prod.properties
+.env
