@@ -28,6 +28,8 @@ const Layout = ({ children }) => {
 
         { path: '/pagos', name: 'Pagos', icon: '💰', roles: ['ADMIN', 'SECRETARIA'] },
         { path: '/reportes', name: 'Informes', icon: '📈', roles: ['ADMIN', 'DOCENTE', 'SECRETARIA'] },
+
+        { path: '/horarios', name: 'Horarios', icon: '🗓️', roles: ['ADMIN', 'DOCENTE', 'SECRETARIA'] },
     ];
 
     const userRole = user?.rol || '';

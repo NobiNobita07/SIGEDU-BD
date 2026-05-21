@@ -14,6 +14,7 @@ import Notas from './pages/Notas';
 import Asistencias from './pages/Asistencias';
 import Pagos from './pages/Pagos';
 import Reportes from './pages/Reportes';
+import HorariosDocentes from './pages/HorariosDocentes';
 
 function App() {
     return (
@@ -33,6 +34,7 @@ function App() {
                         <Route path="/asistencias" element={<Asistencias />} />
                         <Route path="/pagos" element={<Pagos />} />
                         <Route path="/reportes" element={<Reportes />} />
+                        <Route path="/horarios" element={<HorariosDocentes />} />
                     </Route>
                 </Routes>
             </Router>

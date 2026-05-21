@@ -173,6 +173,22 @@ public class SecurityConfig {
                     auth.requestMatchers("/consultas/**")
                             .hasAnyRole("ADMIN", "SECRETARIA", "DOCENTE");
 
+                    // Horarios de docentes
+                    auth.requestMatchers(HttpMethod.GET, "/horarios-docentes/**")
+                            .hasAnyRole("ADMIN", "SECRETARIA", "DOCENTE");
+
+                    auth.requestMatchers(HttpMethod.POST, "/horarios-docentes/**")
+                            .hasAnyRole("ADMIN", "SECRETARIA");
+
+                    auth.requestMatchers(HttpMethod.PUT, "/horarios-docentes/**")
+                            .hasAnyRole("ADMIN", "SECRETARIA");
+
+                    auth.requestMatchers(HttpMethod.PATCH, "/horarios-docentes/**")
+                            .hasAnyRole("ADMIN", "SECRETARIA");
+
+                    auth.requestMatchers(HttpMethod.DELETE, "/horarios-docentes/**")
+                            .hasRole("ADMIN");
+
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
