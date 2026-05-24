@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Layout = ({ children }) => {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout } = useAuth();
@@ -14,64 +13,149 @@ const Layout = ({ children }) => {
     };
 
     const menuItems = [
-        { path: '/', name: 'Dashboard', icon: '📊' },
-        { path: '/apoderados', name: 'Apoderados', icon: '👪' },
-        { path: '/estudiantes', name: 'Estudiantes', icon: '👨‍🎓' },
-        { path: '/docentes', name: 'Docentes', icon: '👨‍🏫' },
-        { path: '/cursos', name: 'Cursos', icon: '📚' },
-        { path: '/grados', name: 'Grados/Secciones', icon: '🏫' },
-        { path: '/matriculas', name: 'Matrículas', icon: '📝' },
-        { path: '/notas', name: 'Notas', icon: '📖' },
-        { path: '/asistencias', name: 'Asistencias', icon: '✅' },
-        { path: '/pagos', name: 'Pagos', icon: '💰' },
-        { path: '/reportes', name: 'Reportes', icon: '📈' },
+        { path: '/', name: 'Panel', icon: '📊', roles: ['ADMIN', 'DOCENTE', 'SECRETARIA'] },
+        { path: '/apoderados', name: 'Apoderados', icon: '👪', roles: ['ADMIN', 'SECRETARIA'] },
+        { path: '/estudiantes', name: 'Estudiantes', icon: '🎓', roles: ['ADMIN', 'DOCENTE', 'SECRETARIA'] },
+        { path: '/docentes', name: 'Docentes', icon: '👨‍🏫', roles: ['ADMIN', 'SECRETARIA'] },
+        { path: '/cursos', name: 'Cursos', icon: '📚', roles: ['ADMIN', 'DOCENTE', 'SECRETARIA'] },
+        { path: '/grados', name: 'Grados/Secciones', icon: '🏫', roles: ['ADMIN', 'SECRETARIA'] },
+        { path: '/matriculas', name: 'Matrículas', icon: '📝', roles: ['ADMIN', 'SECRETARIA'] },
+        { path: '/notas', name: 'Notas', icon: '📖', roles: ['ADMIN', 'DOCENTE'] },
+        { path: '/asistencias', name: 'Asistencias', icon: '✅', roles: ['ADMIN', 'DOCENTE'] },
+        { path: '/pagos', name: 'Pagos', icon: '💰', roles: ['ADMIN', 'SECRETARIA'] },
+        { path: '/reportes', name: 'Informes', icon: '📈', roles: ['ADMIN', 'DOCENTE', 'SECRETARIA'] },
+        { path: '/horarios', name: 'Horarios', icon: '🗓️', roles: ['ADMIN', 'DOCENTE', 'SECRETARIA'] },
     ];
 
+    const userRole = user?.rol || '';
+    const filteredMenuItems = menuItems.filter(item => item.roles.includes(userRole));
+
+    const currentPage =
+        filteredMenuItems.find(item => item.path === location.pathname)?.name || 'Panel';
+
     return (
-        <div className="min-h-screen bg-gray-100">
-            <header className="bg-blue-700 text-white shadow-lg sticky top-0 z-40">
-                <div className="flex items-center justify-between px-4 py-3">
-                    <div className="flex items-center space-x-4">
-                        <button type="button" onClick={() => setSidebarOpen(true)} className="p-2 rounded-md hover:bg-blue-600 focus:outline-none">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
-                        <h1 className="text-xl font-bold">SIGEDU-BD</h1>
-                        <span className="text-sm hidden md:inline">Sistema de Gestión Educativa</span>
+        <div className="min-h-screen bg-[#F3F6FB] font-sans text-slate-800">
+            {/* SIDEBAR CON SCROLL REAL */}
+            <aside
+                className="fixed left-0 top-0 w-72 bg-[#07111F] text-white shadow-2xl z-40"
+                style={{
+                    height: '100vh',
+                    overflowY: 'scroll',
+                    overflowX: 'hidden'
+                }}
+            >
+                <div className="min-h-[110vh] pb-8">
+                    {/* LOGO */}
+                    <div className="p-6 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl shadow-lg shadow-blue-900/40">
+                                🎓
+                            </div>
+
+                            <div>
+                                <h1 className="text-xl font-black tracking-wide">SIGEDU</h1>
+                                <p className="text-[11px] text-slate-400">Gestión Educativa</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <div className="text-right hidden md:block">
-                            <p className="text-sm font-semibold">{user?.username || 'Usuario'}</p>
-                            <p className="text-xs text-blue-100">{user?.rol || 'ROL'}</p>
+
+                    {/* MENÚ */}
+                    <nav className="px-4 py-4 space-y-1">
+                        {filteredMenuItems.map((item) => {
+                            const active = location.pathname === item.path;
+
+                            return (
+                                <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    className={`group flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 ${
+                                        active
+                                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-950/50 ring-1 ring-white/20'
+                                            : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                                    }`}
+                                >
+                                    <span className="text-lg w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center">
+                                        {item.icon}
+                                    </span>
+
+                                    <span className="font-semibold text-sm">
+                                        {item.name}
+                                    </span>
+                                </Link>
+                            );
+                        })}
+                    </nav>
+
+                    {/* USUARIO + CERRAR SESIÓN */}
+                    <div className="px-4 pt-4 pb-8 border-t border-white/10">
+                        <div className="bg-white/10 rounded-3xl p-4 ring-1 ring-white/10">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-11 h-11 rounded-2xl bg-blue-600 flex items-center justify-center font-bold shadow-lg">
+                                    {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                                </div>
+
+                                <div className="min-w-0">
+                                    <p className="font-bold text-sm truncate">
+                                        {user?.username || 'Usuario'}
+                                    </p>
+
+                                    <p className="text-[11px] text-slate-400 uppercase tracking-wide">
+                                        {userRole || 'ROL'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-2xl text-sm font-bold transition shadow-lg shadow-red-950/30"
+                            >
+                                Cerrar sesión
+                            </button>
                         </div>
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-bold">{user?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
-                        </div>
-                        <button type="button" onClick={handleLogout} className="bg-blue-800 hover:bg-blue-900 px-3 py-2 rounded-lg text-sm transition-colors">
-                            Salir
-                        </button>
                     </div>
                 </div>
-            </header>
-
-            {sidebarOpen && <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-20" onClick={() => setSidebarOpen(false)} />}
-
-            <aside className={`fixed top-0 left-0 w-64 h-full bg-white shadow-lg transform transition-transform duration-300 z-30 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="p-4 border-b">
-                    <h2 className="text-xl font-bold text-gray-800">Menú Principal</h2>
-                </div>
-                <nav className="p-2">
-                    {menuItems.map((item) => (
-                        <Link key={item.path} to={item.path} onClick={() => setSidebarOpen(false)} className={`flex items-center space-x-3 px-4 py-3 rounded-lg mb-1 transition-colors ${location.pathname === item.path ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}`}>
-                            <span className="text-xl">{item.icon}</span>
-                            <span>{item.name}</span>
-                        </Link>
-                    ))}
-                </nav>
             </aside>
 
-            <main className="p-6">{children}</main>
+            {/* CONTENIDO PRINCIPAL */}
+            <div className="ml-72 min-h-screen">
+                <header className="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-20">
+                    <div className="px-8 py-5 flex items-center justify-between">
+                        <div>
+                            <h2 className="text-2xl font-black text-slate-900">
+                                {currentPage}
+                            </h2>
+
+                            <p className="text-sm text-slate-500">
+                                {userRole === 'ADMIN' && 'Panel general de dirección y administración'}
+                                {userRole === 'DOCENTE' && 'Panel académico del docente'}
+                                {userRole === 'SECRETARIA' && 'Panel administrativo de secretaría'}
+                                {!userRole && 'Panel administrativo académico'}
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-3xl ring-1 ring-slate-200">
+                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold">
+                                {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+
+                            <div className="hidden sm:block">
+                                <p className="text-sm font-bold text-slate-800">
+                                    {user?.username || 'Usuario'}
+                                </p>
+
+                                <p className="text-[11px] text-slate-500 uppercase">
+                                    {userRole || 'ROL'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <main className="p-8">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 };
